@@ -1,18 +1,24 @@
 [project]
-name = "micrograd-rs"
+name = "oxigrad"
 version = "0.1.0"
-description = "Add your description here"
+description = "Rust implementation of micrograd using PyO3"
 readme = "README.md"
 authors = [{ name = "lalitm1004", email = "lalitm1004@gmail.com" }]
 requires-python = ">=3.13"
 dependencies = []
 
+[project.urls]
+Repository = "https://github.com/lalitm1004/oxigrad"
+Homepage = "https://github.com/lalitm1004/oxigrad"
+Issues = "https://github.com/lalitm1004/oxigrad/issues"
+
+
 [project.scripts]
-micrograd-rs = "micrograd_rs:main"
+micrograd-rs = "oxigrad:main"
 
 [tool.maturin]
-module-name = "micrograd_rs._core"
-python-packages = ["micrograd_rs"]
+module-name = "oxigrad._core"
+python-packages = ["oxigrad"]
 python-source = "src"
 
 [build-system]
