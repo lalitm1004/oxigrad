@@ -1,6 +1,6 @@
 use std::{cell::Ref, hash::Hash};
 
-use super::{Value, operation::Operation};
+use super::{operation::Operation, Value};
 
 pub type BackwardFn = fn(value: &Ref<ValueInternal>);
 

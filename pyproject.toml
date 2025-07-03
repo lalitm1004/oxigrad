@@ -1,0 +1,20 @@
+[project]
+name = "micrograd-rs"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [{ name = "lalitm1004", email = "lalitm1004@gmail.com" }]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+micrograd-rs = "micrograd_rs:main"
+
+[tool.maturin]
+module-name = "micrograd_rs._core"
+python-packages = ["micrograd_rs"]
+python-source = "src"
+
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
