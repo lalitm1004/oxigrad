@@ -1,6 +1,3 @@
-# Project Description
-> A minimal scalar-valued autograd engine written in Rust
-
 ## Key Features
 - Forward and Backward pass on scalar values
 - Backpropagation with a computation graph
