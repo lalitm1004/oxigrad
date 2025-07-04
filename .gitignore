@@ -12,3 +12,6 @@ wheels/
 
 # Cargo
 target/
+
+# Random
+test.py

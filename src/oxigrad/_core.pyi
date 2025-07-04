@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 class Value:
     """
@@ -10,24 +10,13 @@ class Value:
     on inputs for gradient calculation using backpropagation.
     """
 
-    def __init__(self, data: Union[int, float]) -> None:
+    def __init__(self, data: Union[int, float], label: Optional[str] = None) -> None:
         """
         Initialize a new Value instance with the given data.
 
         Parameters:
             data: `Union[float, int]`: The numerical value of this node.
-        """
-
-    @staticmethod
-    def from_float(data: float) -> Value:
-        """
-        Create a Value object from a float.
-
-        Parameters:
-            data: `float`: The numeric value to be wrapped.
-
-        Returns:
-            `Value`: A Value instance containing the given float.
+            label: `Optional[str]` (default `None`): label associated with this node.
         """
 
     @property
@@ -46,6 +35,24 @@ class Value:
 
         Returns:
             `float`: The computed gradient after backpropagation.
+        """
+
+    @property
+    def previous(self) -> List[Value]:
+        """
+        Get the list of parent nodes that were used to compute this Value.
+
+        Returns:
+            `List[Value]`: List of parent nodes
+        """
+
+    @property
+    def operation(self) -> Optional[str]:
+        """
+        Get information about the operation used to compute this node.
+
+        Returns:
+            `Optional[str]`: Operation used to compute this node
         """
 
     def set_label(self, label: str) -> Value:
@@ -67,7 +74,7 @@ class Value:
             `Optional[str]` - The label if it exists, otherwise `None`.
         """
 
-    def pow(self, power: Value) -> Value:
+    def pow(self, power: Union[int, float]) -> Value:
         """
         Raise this Value to the power of another Value.
 
@@ -87,13 +94,16 @@ class Value:
         a scalar output node to initiate backpropagation.
         """
 
-    def __add__(self, other: Value) -> Value:
+    def __add__(self, other: Union[int, float, Value]) -> Value:
         """Add two values."""
 
-    def __mul__(self, other: Value) -> Value:
+    def __mul__(self, other: Union[int, float, Value]) -> Value:
         """Multiply two values."""
 
-    def __sub__(self, other: Value) -> Value:
+    def __pow__(self, power: Union[int, float]) -> Value:
+        """Raise something to a power"""
+
+    def __sub__(self, other: Union[int, float, Value]) -> Value:
         """Subtract two values."""
 
     def __neg__(self) -> Value:
@@ -104,3 +114,48 @@ class Value:
 
     def __str__(self) -> str:
         """String representation of this value."""
+
+class Activation:
+    """
+    A collection of static methods implementing common activation functions.
+
+    This class provides differentiable activation functions that operate on `Value`
+    nodes within a computation graph. These functions return new `Value` instances
+    with appropriate forward and backward computation logic for use in automatic
+    differentiation.
+    """
+
+    @staticmethod
+    def ReLU(input: Value) -> Value:
+        """
+        Apply the ReLU (Rectified Linear Unit) activation function.
+
+        This function returns `input` if it is greater than 0, otherwise returns 0.
+
+        Parameters:
+            input: `Value`: The input Value to apply ReLU to.
+
+        Returns:
+            `Value`: A new Value instance after applying ReLU.
+
+        Gradient:
+            The gradient is 1.0 when input > 0, otherwise 0.
+        """
+
+    @staticmethod
+    def Sigmoid(input: Value) -> Value:
+        """
+        Apply the Sigmoid activation function.
+
+        This function maps the input to a value between 0 and 1 using the formula:
+        sigmoid(x) = 1 / (1 + exp(-x))
+
+        Parameters:
+            input: `Value`: The input Value to apply sigmoid to.
+
+        Returns:
+            `Value`: A new Value instance after applying sigmoid.
+
+        Gradient:
+            Uses the identity: sigmoid(x) * (1 - sigmoid(x))
+        """
