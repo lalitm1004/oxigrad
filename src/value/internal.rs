@@ -1,4 +1,4 @@
-use std::{cell::Ref, hash::Hash};
+use std::cell::Ref;
 
 use super::{operation::Operation, Value};
 
@@ -32,25 +32,3 @@ impl ValueInternal {
         }
     }
 }
-
-impl Hash for ValueInternal {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.data.to_bits().hash(state);
-        self.gradient.to_bits().hash(state);
-        self.previous.hash(state);
-        self.label.hash(state);
-        self.operation.hash(state);
-    }
-}
-
-impl PartialEq for ValueInternal {
-    fn eq(&self, other: &Self) -> bool {
-        self.data == other.data
-            && self.gradient == other.gradient
-            && self.previous == other.previous
-            && self.label == other.label
-            && self.operation == other.operation
-    }
-}
-
-impl Eq for ValueInternal {}

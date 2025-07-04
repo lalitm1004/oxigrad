@@ -8,7 +8,7 @@ use pyo3::{prelude::*, types::PyAny};
 use std::{cell::RefCell, collections::HashSet, hash::Hash, ops::Deref, rc::Rc};
 
 #[pyclass(unsendable)]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct Value(Rc<RefCell<ValueInternal>>);
 
 #[pymethods]
@@ -59,11 +59,16 @@ impl Value {
         }
     }
 
-    fn backward(&self) {
+    fn zero_grad(&self) {
         let mut visited: HashSet<Value> = HashSet::new();
+        Self::zero_grad_helper(&mut visited, self);
+    }
+
+    fn backward(&self) {
+        self.zero_grad();
 
         self.borrow_mut().gradient = 1.0;
-        Self::backprop_helper(&mut visited, self);
+        Self::backprop_helper(self);
     }
 
     fn __add__(&self, other: Py<PyAny>, py: Python) -> PyResult<Value> {
@@ -138,11 +143,14 @@ impl Value {
         let result = self.borrow().data + other.borrow().data;
 
         let backward: BackwardFn = |out| {
+            // drop to prevent multiple mutable references in b = a + a
             let mut first = out.previous[0].borrow_mut();
-            let mut second = out.previous[1].borrow_mut();
-
             first.gradient += out.gradient;
+            std::mem::drop(first);
+
+            let mut second = out.previous[1].borrow_mut();
             second.gradient += out.gradient;
+            std::mem::drop(second);
         };
 
         Value::new_internal(ValueInternal::new(
@@ -158,11 +166,17 @@ impl Value {
         let result = self.borrow().data * other.borrow().data;
 
         let backward: BackwardFn = |out| {
-            let mut first = out.previous[0].borrow_mut();
-            let mut second = out.previous[1].borrow_mut();
+            let first_data = out.previous[0].borrow().data;
+            let second_data = out.previous[1].borrow().data;
 
-            first.gradient += second.data * out.gradient;
-            second.gradient += first.data * out.gradient;
+            // prevent multiple mutable references in b = a * a
+            let mut first = out.previous[0].borrow_mut();
+            first.gradient += second_data * out.gradient;
+            std::mem::drop(first);
+
+            let mut second = out.previous[1].borrow_mut();
+            second.gradient += first_data * out.gradient;
+            std::mem::drop(second)
         };
 
         Value::new_internal(ValueInternal::new(
@@ -204,25 +218,62 @@ impl Value {
         self.mul_ref(&minus_one)
     }
 
-    fn backprop_helper(visited: &mut HashSet<Value>, value: &Value) {
+    fn zero_grad_helper(visited: &mut HashSet<Value>, value: &Value) {
         if !visited.contains(value) {
             visited.insert(value.clone());
 
-            let temp = value.borrow();
-            if let Some(backward) = temp.backward {
-                backward(&temp)
-            }
+            let previous = value.borrow().previous.clone();
 
-            for prev in &temp.previous {
-                Self::backprop_helper(visited, prev);
+            value.borrow_mut().gradient = 0.0;
+
+            for prev in &previous {
+                Self::zero_grad_helper(visited, prev);
             }
         }
     }
+
+    fn backprop_helper(value: &Value) {
+        let mut topo_order = Vec::new();
+        let mut visited = HashSet::new();
+        Self::build_topo_order(value, &mut visited, &mut topo_order);
+
+        for node in topo_order.iter().rev() {
+            let temp = node.borrow();
+            if let Some(backward) = temp.backward {
+                backward(&temp);
+            }
+        }
+    }
+
+    fn build_topo_order(value: &Value, visited: &mut HashSet<Value>, topo_order: &mut Vec<Value>) {
+        if visited.contains(value) {
+            return;
+        }
+
+        visited.insert(value.clone());
+
+        let temp = value.borrow();
+        for prev in &temp.previous {
+            Self::build_topo_order(prev, visited, topo_order);
+        }
+
+        topo_order.push(value.clone());
+    }
 }
+
+// Use pointer based PartialEq and Hashing to ensure
+// each computational path is reached
+impl PartialEq for Value {
+    fn eq(&self, other: &Self) -> bool {
+        Rc::ptr_eq(&self, &other)
+    }
+}
+
+impl Eq for Value {}
 
 impl Hash for Value {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.borrow().hash(state);
+        Rc::as_ptr(&self).hash(state);
     }
 }
 
@@ -233,3 +284,6 @@ impl Deref for Value {
         &self.0
     }
 }
+
+#[cfg(test)]
+mod test;
