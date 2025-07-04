@@ -1,5 +1,6 @@
 from typing import List, Optional, Union
 
+
 class Value:
     """
     A scalar value in a computational graph used for automatic differentiation.
@@ -114,6 +115,7 @@ class Value:
 
     def __str__(self) -> str:
         """String representation of this value."""
+
 
 class Activation:
     """

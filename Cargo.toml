@@ -2,6 +2,8 @@
 name = "oxigrad"
 version = "0.2.0"
 edition = "2021"
+description = "A minimal scalar-valued autograd engine written in Rust"
+license = "MIT"
 
 [lib]
 name = "_core"
