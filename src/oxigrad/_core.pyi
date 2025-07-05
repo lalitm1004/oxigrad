@@ -29,6 +29,9 @@ class Value:
             `float`
         """
         ...
+    
+    @data.setter
+    def data(self, new_data: Union[int, float]) -> None: ...
 
     @property
     def grad(self) -> float:

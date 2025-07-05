@@ -39,6 +39,11 @@ impl Value {
         self.borrow().data
     }
 
+    #[setter]
+    fn set_data(&self, new_data: f64) {
+        self.borrow_mut().data = new_data
+    }
+
     #[getter]
     fn grad(&self) -> f64 {
         self.borrow().gradient
