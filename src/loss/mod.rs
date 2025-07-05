@@ -1,4 +1,5 @@
 mod cross_entropy;
+mod mse;
 
 use pyo3::{exceptions::PyValueError, prelude::*};
 
@@ -18,5 +19,16 @@ impl Loss {
             ));
         }
         Ok(Self::cross_entropy_helper(&logits, &targets))
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "MSE")]
+    fn mse(predictions: Vec<Value>, targets: Vec<Value>) -> PyResult<Value> {
+        if predictions.len() != targets.len() {
+            return Err(PyValueError::new_err(
+                "Predictions and targets must have same length",
+            ));
+        }
+        Ok(Self::mse_helper(&predictions, &targets))
     }
 }

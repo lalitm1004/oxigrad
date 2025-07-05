@@ -198,9 +198,9 @@ fn test_multiple_backward_calls() {
     y.backward();
     assert_eq!(x.grad(), 4.0);
 
-    // Second backward - should reset gradients first
+    // Second backward - should accumulate
     y.backward();
-    assert_eq!(x.grad(), 4.0);
+    assert_eq!(x.grad(), 8.0);
 }
 
 #[test]

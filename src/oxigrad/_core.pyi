@@ -29,7 +29,7 @@ class Value:
             `float`
         """
         ...
-    
+
     @data.setter
     def data(self, new_data: Union[int, float]) -> None: ...
 
@@ -102,6 +102,11 @@ class Value:
         called on a scalar output node to initiate backpropagation.
         """
         ...
+
+    def zero_grad(self) -> None:
+        """
+        Resets all gradients to zero.
+        """
 
     # Standard arithmetic operations
     def __add__(self, other: Union[int, float, Value]) -> Value: ...
@@ -187,10 +192,24 @@ class Loss:
     @staticmethod
     def CrossEntropy(logits: Sequence[Value], targets: Sequence[Value]) -> Value:
         """
-        Compute cross-entropy loss between logits and targets. Has in-built Softmax
+        Compute cross-entropy loss between logits and targets. Includes in-built Softmax
 
         Parameters:
             logits: `Sequence[Value]` - Predicted output logits.
+            targets: `Sequence[Value]` - Ground truth target values.
+
+        Returns:
+            `Value` - Computed cross-entropy loss.
+        """
+        ...
+
+    @staticmethod
+    def MSE(logits: Sequence[Value], targets: Sequence[Value]) -> Value:
+        """
+        Compute mean square error loss between predictions and targets.
+
+        Parameters:
+            predictions: `Sequence[Value]` - Predicted output logits.
             targets: `Sequence[Value]` - Ground truth target values.
 
         Returns:

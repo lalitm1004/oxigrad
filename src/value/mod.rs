@@ -81,14 +81,11 @@ impl Value {
         ))
     }
 
-    pub fn zero_grad(&self) {
-        let mut visited: HashSet<Value> = HashSet::new();
-        Self::zero_grad_helper(&mut visited, self);
+    fn zero_grad(&self) {
+        Self::zero_grad_helper(self);
     }
 
     pub fn backward(&self) {
-        self.zero_grad();
-
         self.borrow_mut().gradient = 1.0;
         Self::backprop_helper(self);
     }
@@ -270,17 +267,13 @@ impl Value {
         self.mul_ref(&reciprocal)
     }
 
-    fn zero_grad_helper(visited: &mut HashSet<Value>, value: &Value) {
-        if !visited.contains(value) {
-            visited.insert(value.clone());
+    fn zero_grad_helper(value: &Value) {
+        let mut topo_order = Vec::new();
+        let mut visited = HashSet::new();
+        Self::build_topo_order(value, &mut visited, &mut topo_order);
 
-            let previous = value.borrow().previous.clone();
-
-            value.borrow_mut().gradient = 0.0;
-
-            for prev in &previous {
-                Self::zero_grad_helper(visited, prev);
-            }
+        for node in topo_order.iter().rev() {
+            node.borrow_mut().gradient = 0.0;
         }
     }
 

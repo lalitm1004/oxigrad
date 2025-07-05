@@ -18,6 +18,7 @@
     - ReLU
     - Softmax
 - Loss Criterion:
+    - MSE
     - Cross Entropy
 
 ## Installing

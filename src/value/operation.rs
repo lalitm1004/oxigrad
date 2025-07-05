@@ -15,6 +15,7 @@ pub enum Operation {
 
     // Loss Criterion
     CROSSENTROPY(usize),
+    MSE(usize),
 }
 
 impl fmt::Display for Operation {
@@ -29,6 +30,7 @@ impl fmt::Display for Operation {
             Operation::RELU => write!(f, "RELU"),
             Operation::SIGMOID => write!(f, "SIGMOID"),
             Operation::CROSSENTROPY(_) => write!(f, "CROSSENTROPY"),
+            Operation::MSE(_) => write!(f, "MSE"),
         }
     }
 }
