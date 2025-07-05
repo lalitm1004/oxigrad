@@ -1,6 +1,9 @@
 use pyo3::prelude::*;
 
-use crate::value::{BackwardFn, Operation, Value, ValueInternal};
+use crate::{
+    loss::Loss,
+    value::{BackwardFn, Operation, Value, ValueInternal},
+};
 
 #[pyclass]
 pub struct Activation;
@@ -47,5 +50,12 @@ impl Activation {
             vec![input.clone()],
             Some(backward),
         ))
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "Softmax")]
+    pub fn softmax(logits: Vec<Value>) -> Vec<f64> {
+        let logits_data: Vec<f64> = logits.iter().map(|v| v.borrow().data).collect();
+        Loss::stable_softmax(&logits_data)
     }
 }

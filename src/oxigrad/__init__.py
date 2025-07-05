@@ -1,4 +1,4 @@
-from ._core import Activation, Value
+from ._core import Activation, Loss, Value
 
-__all__ = ["Activation", "Value"]
-__version__ = "0.2.2"
+__all__ = ["Activation", "Loss", "Value"]
+__version__ = "0.3.0"

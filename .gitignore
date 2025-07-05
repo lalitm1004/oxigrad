@@ -13,5 +13,5 @@ wheels/
 # Cargo
 target/
 
-# Random
-test.py
+# Testing
+py-test/
