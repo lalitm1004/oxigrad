@@ -213,6 +213,6 @@ class Loss:
             targets: `Sequence[Value]` - Ground truth target values.
 
         Returns:
-            `Value` - Computed cross-entropy loss.
+            `Value` - Computed mean square error loss.
         """
         ...
