@@ -6,8 +6,6 @@ readme = { file = "README.pypi.md", content-type = "text/markdown" }
 license = { text = "MIT" }
 authors = [{ name = "lalitm1004", email = "lalitm1004@gmail.com" }]
 requires-python = ">=3.9"
-dependencies = []
-
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -29,6 +27,12 @@ classifiers = [
 Repository = "https://github.com/lalitm1004/oxigrad"
 Homepage = "https://github.com/lalitm1004/oxigrad"
 Issues = "https://github.com/lalitm1004/oxigrad/issues"
+
+[project.optional_dependencies]
+examples = [
+    "matplotlib>=3.9.4",
+    "pyqt6>=6.9.1",
+]
 
 
 [project.scripts]
