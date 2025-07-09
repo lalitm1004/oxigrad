@@ -1,0 +1,3 @@
+[workspace]
+members = ["oxigrad-core"]
+default-members = ["oxigrad-core"]
